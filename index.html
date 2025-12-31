@@ -430,7 +430,7 @@
 			}
 
 			/* Trái tim */
-			.heart {
+			.heart-arrow .heart {
 				width: 22px;
 				height: 22px;
 				background: #ff6f91;
@@ -440,8 +440,8 @@
 				animation: heart-bounce 1.4s infinite;
 			}
 
-			.heart::before,
-			.heart::after {
+			.heart-arrow .heart::before,
+			.heart-arrow .heart::after {
 				content: '';
 				position: absolute;
 				width: 22px;
@@ -450,11 +450,12 @@
 				border-radius: 50%;
 			}
 
-			.heart::before {
+			.heart-arrow .heart::before {
 				top: -11px;
 				left: 0;
 			}
-			.heart::after {
+
+			.heart-arrow .heart::after {
 				left: -11px;
 				top: 0;
 			}
@@ -1583,6 +1584,42 @@
 					font-size: 22px;
 				}
 			}
+
+			.floating-hearts {
+				pointer-events: none;
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				height: 0;
+				overflow: visible;
+				z-index: 999;
+			}
+
+			.floating-hearts .heart {
+				position: absolute;
+				bottom: -20px;
+				color: #ff6f91;
+				font-size: 18px;
+				opacity: 0.7;
+				animation: flyUp 4s linear forwards;
+				text-shadow: 0 0 8px rgba(255, 111, 145, 0.6);
+			}
+
+			@keyframes flyUp {
+				0% {
+					transform: translateY(0) scale(1) rotate(0deg);
+					opacity: 0.8;
+				}
+				50% {
+					opacity: 1;
+					transform: translateY(-50vh) scale(1.4) rotate(10deg);
+				}
+				100% {
+					opacity: 0;
+					transform: translateY(-100vh) scale(0.8) rotate(-10deg);
+				}
+			}
 		</style>
 	</head>
 	<body class="invite-open">
@@ -1843,9 +1880,9 @@
 							<div class="timeline-title">Cầu hôn</div>
 							<div class="timeline-date">14 · 11 · 2025</div>
 							<div class="timeline-text">
-								Trong không khí gần tới Giáng Sinh ấm áp, giữa ánh đèn
-								rực rỡ, câu trả lời “Em đồng ý” đã làm mùa đông
-								năm ấy trở nên thật đặc biệt.
+								Trong không khí gần tới Giáng Sinh ấm áp, giữa
+								ánh đèn rực rỡ, câu trả lời “Em đồng ý” đã làm
+								mùa đông năm ấy trở nên thật đặc biệt.
 							</div>
 						</div>
 						<div class="timeline-content-right">
@@ -1984,7 +2021,29 @@
 			<span>♫</span>
 		</button>
 
+		<div class="floating-hearts"></div>
+
 		<script>
+			(function () {
+				const container = document.querySelector('.floating-hearts');
+
+				function createHeart() {
+					const heart = document.createElement('span');
+					heart.className = 'heart';
+					heart.textContent = '♥';
+
+					heart.style.left = Math.random() * 100 + 'vw';
+					heart.style.fontSize = Math.random() * 14 + 14 + 'px';
+					heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+
+					container.appendChild(heart);
+
+					setTimeout(() => heart.remove(), 4000);
+				}
+
+				setInterval(createHeart, 1500);
+			})();
+
 			// COUNTDOWN
 			(function () {
 				const countdownEl = document.getElementById('countdown');
@@ -2008,32 +2067,31 @@
 					const seconds = totalSeconds % 60;
 
 					countdownEl.innerHTML = `
-          <div class="count-item">
-            <span class="count-number">${String(days).padStart(2, '0')}</span>
-            <span class="count-label">Ngày</span>
-          </div>
-          <span class="count-sep">·</span>
-          <div class="count-item">
-            <span class="count-number">${String(hours).padStart(2, '0')}</span>
-            <span class="count-label">Giờ</span>
-          </div>
-          <span class="count-sep">·</span>
-          <div class="count-item">
-            <span class="count-number">${String(minutes).padStart(
-				2,
-				'0'
-			)}</span>
-            <span class="count-label">Phút</span>
-          </div>
-          <span class="count-sep">·</span>
-          <div class="count-item">
-            <span class="count-number">${String(seconds).padStart(
-				2,
-				'0'
-			)}</span>
-            <span class="count-label">Giây</span>
-          </div>
-        `;
+						<div class="count-item">
+							<span class="count-number">${String(days).padStart(2, '0')}</span>
+							<span class="count-label">Ngày</span>
+						</div>
+						<span class="count-sep">·</span>
+						<div class="count-item">
+							<span class="count-number">${String(hours).padStart(2, '0')}</span>
+							<span class="count-label">Giờ</span>
+						</div>
+						<span class="count-sep">·</span>
+						<div class="count-item">
+							<span class="count-number">${String(minutes).padStart(
+								2,
+								'0'
+							)}</span>
+							<span class="count-label">Phút</span>
+						</div>
+						<span class="count-sep">·</span>
+						<div class="count-item">
+							<span class="count-number">${String(seconds).padStart(
+								2,
+								'0'
+							)}</span>
+							<span class="count-label">Giây</span>
+						</div>`;
 				}
 
 				renderCountdown();
@@ -2088,7 +2146,6 @@
 					});
 				}
 
-				// Nút tròn góc dưới: bật / tắt nhạc
 				if (toggle) {
 					toggle.addEventListener('click', () => {
 						if (isPlaying) {
